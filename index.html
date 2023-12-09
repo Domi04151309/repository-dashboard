@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Repository Dashboard</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Access the key information of a GitHub public repository all in one place.">
+    <meta name="theme-color" content="#000000"/>
+    <link rel="icon" href="./icons8-info.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./index.css">
+  </head>
+  <body>
+    <header>
+      <input id="repo" type="text" placeholder="{owner}/{repo}" aria-label="Repository" />
+      <button id="load" type="button">Load</button>
+    </header>
+    <main class="main-grid">
+      <div>
+        <h1>Issues</h1>
+        <template id="issue-template">
+          <li>
+            <h2 class="issue-title"></h2>
+            <div>
+              <ul class="issue-labels"></ul>
+              <p class="issue-assignees"></p>
+            </div>
+          </li>
+        </template>
+        <ul id="issues"></ul>
+      </div>
+      <div>
+        <h1>Contributors</h1>
+        <template id="contributor-template">
+          <li>
+            <img class="contributor-image" src="" alt="Profile" loading="lazy">
+            <div>
+              <h2 class="contributor-name"></h2>
+              <p><span class="contributor-contributions"></span> Contributions</p>
+            </div>
+          </li>
+        </template>
+        <ul id="contributors"></ul>
+      </div>
+    </main>
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>

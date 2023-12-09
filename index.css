@@ -1,0 +1,78 @@
+html, button, input {
+  font-family: sans-serif;
+  background: rgb(13, 17, 23);
+  color: rgb(132, 141, 151);
+  line-height: 1.5;
+}
+body {
+  margin: 16px;
+}
+h1, h2, button, input {
+  font-weight: normal;
+  color: rgb(230, 237, 243);
+}
+h1 {
+  font-size: 1.4rem;
+}
+h2 {
+  font-size: 1.2rem;
+}
+p, li {
+  font-size: 0.8rem;
+}
+button, input {
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+button {
+  background: rgb(33, 38, 45);
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  cursor: pointer;
+}
+button:hover {
+  background: rgb(48, 54, 61);
+  border: 1px solid rgb(139, 148, 158);
+}
+input {
+  border: 1px solid rgb(48, 54, 61);
+}
+.main-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, 2fr);
+}
+ul {
+  list-style: none;
+  padding: 0;
+}
+#issues > li, #contributors > li {
+  padding: 8px 0;
+}
+#issues > li *, #contributors > li * {
+  margin: 0;
+}
+.issue-labels > li {
+  padding: 2px 8px;
+  background: rgba(56, 139, 253, 0.1);
+  border: 1px solid rgba(56, 139, 253, 0.4);
+  color: rgba(56, 139, 253, 0.4);
+  border-radius: 32px;
+}
+header {
+  justify-content: center;
+}
+header, #issues > li > div, #contributors > li, .issue-labels {
+  display: flex;
+  align-items: center;
+}
+header, #issues > li > div, .issue-labels {
+  gap: 8px;
+}
+#contributors > li {
+  gap: 16px;
+}
+#contributors img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
