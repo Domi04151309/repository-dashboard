@@ -5,6 +5,8 @@ const issuesList = document.getElementById('issues');
 const issueTemplate = document.getElementById('issue-template');
 const contributorsList = document.getElementById('contributors');
 const contributorTemplate = document.getElementById('contributor-template');
+const branchesList = document.getElementById('branches');
+const branchTemplate = document.getElementById('branch-template');
 
 /**
  * @param {string} baseUrl
@@ -48,7 +50,8 @@ async function loadIssues(baseUrl) {
 async function loadContributors(baseUrl) {
   if (
     !(issueTemplate instanceof HTMLTemplateElement) ||
-    !(issuesList instanceof Element)) throw new Error(INVALID_LAYOUT);
+    !(issuesList instanceof Element)
+  ) throw new Error(INVALID_LAYOUT);
   const issuesRequest = await fetch(baseUrl + '/issues');
   const issues = await issuesRequest.json();
   // eslint-disable-next-line require-atomic-updates
@@ -102,12 +105,74 @@ async function loadContributors(baseUrl) {
 }
 
 /**
+ * @param {string} baseUrl
+ * @param {string} sha
+ * @returns {Promise<Node[]>}
+ */
+async function loadCommits(baseUrl, sha) {
+  const commitsRequest = await fetch(
+    baseUrl + '/commits?per_page=5&sha=' + sha
+  );
+  const commits = await commitsRequest.json();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return commits.map((/** @type {unknown} */ commit) => {
+    const listItem = document.createElement('li');
+    if (
+      typeof commit === 'object' &&
+      commit !== null &&
+      'commit' in commit &&
+      typeof commit.commit === 'object' &&
+      commit.commit !== null &&
+      'message' in commit.commit &&
+      typeof commit.commit.message === 'string'
+    ) [listItem.textContent] = commit.commit.message.split('\n');
+    return listItem;
+  });
+}
+
+/**
+ * @param {string} baseUrl
+ * @returns {Promise<void>}
+ */
+async function loadBranches(baseUrl) {
+  if (
+    !(branchTemplate instanceof HTMLTemplateElement) ||
+    !(branchesList instanceof Element)
+  ) throw new Error(INVALID_LAYOUT);
+  const branchesRequest = await fetch(baseUrl + '/branches');
+  const branches = await branchesRequest.json();
+  // eslint-disable-next-line require-atomic-updates
+  branchesList.textContent = '';
+  for (const branch of branches) {
+    const branchView = branchTemplate.content.cloneNode(true);
+    if (
+      !(branchView instanceof DocumentFragment)
+    ) throw new Error(INVALID_LAYOUT);
+    const title = branchView.querySelector('.branch-title');
+    const commits = branchView.querySelector('.branch-commits');
+    if (
+      !(title instanceof Node) ||
+      !(commits instanceof Node)
+    ) throw new Error(INVALID_LAYOUT);
+    // eslint-disable-next-line no-await-in-loop, @typescript-eslint/no-unsafe-argument
+    const commitElements = await loadCommits(baseUrl, branch.commit.sha);
+    title.textContent = branch.name;
+    commits.append(...commitElements);
+    branchesList.append(branchView);
+  }
+}
+
+/**
  * @param {string} repo
  * @returns {Promise<void>}
  */
 async function loadInfo(repo) {
   const baseUrl = 'https://api.github.com/repos/' + repo;
-  await Promise.all([loadIssues(baseUrl), loadContributors(baseUrl)]);
+  await Promise.all([
+    loadIssues(baseUrl),
+    loadContributors(baseUrl),
+    loadBranches(baseUrl)
+  ]);
 }
 
 document.getElementById('load')?.addEventListener('click', async () => {

@@ -41,6 +41,9 @@ input {
   gap: 16px;
   grid-template-columns: repeat(2, 2fr);
 }
+.main-grid :first-child {
+  grid-row: span 2;
+}
 ul {
   list-style: none;
   padding: 0;
