@@ -2,6 +2,8 @@ import { loadBranches } from './js/branches.js';
 import { loadContributors } from './js/contributors.js';
 import { loadIssues } from './js/issues.js';
 
+const URL_KEY = 'repository';
+
 const repoInput = document.getElementById('repo');
 
 /**
@@ -17,6 +19,18 @@ async function loadInfo(repo) {
   ]);
 }
 
+const url = new URL(location.href);
+if (url.searchParams.has(URL_KEY)) {
+  const value = url.searchParams.get(URL_KEY) ?? '';
+  if (repoInput instanceof HTMLInputElement) repoInput.value = value;
+  await loadInfo(value);
+}
+
 document.getElementById('load')?.addEventListener('click', async () => {
-  if (repoInput instanceof HTMLInputElement) await loadInfo(repoInput.value);
+  if (repoInput instanceof HTMLInputElement) {
+    const searchUrl = new URL(location.href);
+    searchUrl.searchParams.set(URL_KEY, repoInput.value);
+    history.pushState({}, '', searchUrl);
+    await loadInfo(repoInput.value);
+  }
 });
