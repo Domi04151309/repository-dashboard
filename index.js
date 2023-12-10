@@ -1,3 +1,6 @@
+// @ts-expect-error
+import mermaid from 'https://unpkg.com/mermaid@10.6.1/dist/mermaid.esm.min.mjs';
+
 const INVALID_LAYOUT = 'Invalid Layout.';
 
 const repoInput = document.getElementById('repo');
@@ -5,6 +8,7 @@ const issuesList = document.getElementById('issues');
 const issueTemplate = document.getElementById('issue-template');
 const contributorsList = document.getElementById('contributors');
 const contributorTemplate = document.getElementById('contributor-template');
+const gitGraph = document.getElementById('git-graph');
 const branchesList = document.getElementById('branches');
 const branchTemplate = document.getElementById('branch-template');
 
@@ -15,7 +19,7 @@ const branchTemplate = document.getElementById('branch-template');
 async function loadContributors(baseUrl) {
   if (
     !(contributorTemplate instanceof HTMLTemplateElement) ||
-    !(contributorsList instanceof Element)
+    !(contributorsList instanceof Node)
   ) throw new Error(INVALID_LAYOUT);
   const contributorsRequest = await fetch(baseUrl + '/contributors');
   const contributors = await contributorsRequest.json();
@@ -50,7 +54,7 @@ async function loadContributors(baseUrl) {
 async function loadDetailedContributors(baseUrl) {
   if (
     !(contributorTemplate instanceof HTMLTemplateElement) ||
-    !(contributorsList instanceof Element)
+    !(contributorsList instanceof Node)
   ) throw new Error(INVALID_LAYOUT);
   const contributorsRequest = await fetch(baseUrl + '/stats/contributors');
   const contributors = await contributorsRequest.json();
@@ -122,7 +126,7 @@ async function loadDetailedContributors(baseUrl) {
 async function loadIssues(baseUrl) {
   if (
     !(issueTemplate instanceof HTMLTemplateElement) ||
-    !(issuesList instanceof Element)
+    !(issuesList instanceof Node)
   ) throw new Error(INVALID_LAYOUT);
   const issuesRequest = await fetch(baseUrl + '/issues');
   const issues = await issuesRequest.json();
@@ -173,19 +177,35 @@ async function loadIssues(baseUrl) {
 /**
  * @param {string} baseUrl
  * @param {string} sha
- * @returns {Promise<Node[]>}
+ * @returns {Promise<{ graph: Set<string>, nodes: Node[] }>}
  */
 async function loadCommits(baseUrl, sha) {
   const commitsRequest = await fetch(
     baseUrl + '/commits?per_page=5&sha=' + sha
   );
   const commits = await commitsRequest.json();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return commits.map((/** @type {any} */ commit) => {
+
+  const nodes = commits.map((/** @type {any} */ commit) => {
     const listItem = document.createElement('li');
     [listItem.textContent] = commit.commit.message.split('\n');
     return listItem;
   });
+
+  const vertices = commits.map(
+    (
+      /** @type {any} */ commit
+    ) => commit.sha + '(' + commit.commit.message.split('\n')[0] + ')'
+  );
+  commits.reverse();
+  const edges = commits.map(
+    (
+      /** @type {any} */ commit,
+      /** @type {number} */ index,
+      /** @type {any[]} */ array
+    ) => index === 0 ? '' :array[index - 1].sha + ' --> ' + commit.sha
+  );
+
+  return { graph: new Set([...vertices, ...edges]), nodes };
 }
 
 /**
@@ -194,13 +214,15 @@ async function loadCommits(baseUrl, sha) {
  */
 async function loadBranches(baseUrl) {
   if (
+    !(gitGraph instanceof Node) ||
     !(branchTemplate instanceof HTMLTemplateElement) ||
-    !(branchesList instanceof Element)
+    !(branchesList instanceof Node)
   ) throw new Error(INVALID_LAYOUT);
   const branchesRequest = await fetch(baseUrl + '/branches');
   const branches = await branchesRequest.json();
   // eslint-disable-next-line require-atomic-updates
   branchesList.textContent = '';
+  const completeGraph = new Set();
   for (const branch of branches) {
     const branchView = branchTemplate.content.cloneNode(true);
     if (
@@ -213,11 +235,22 @@ async function loadBranches(baseUrl) {
       !(commits instanceof Node)
     ) throw new Error(INVALID_LAYOUT);
     // eslint-disable-next-line no-await-in-loop, @typescript-eslint/no-unsafe-argument
-    const commitElements = await loadCommits(baseUrl, branch.commit.sha);
+    const { graph, nodes } = await loadCommits(baseUrl, branch.commit.sha);
     title.textContent = branch.name;
-    commits.append(...commitElements);
+    commits.append(...nodes);
     branchesList.append(branchView);
+    for (const entry of graph) completeGraph.add(entry);
   }
+  const { svg } = await mermaid.render(
+    'mermaid',
+    [
+      '%%{init: {\'theme\':\'dark\'}}%%',
+      'flowchart LR',
+      ...completeGraph
+    ].join('\n')
+  );
+  // eslint-disable-next-line require-atomic-updates
+  gitGraph.innerHTML = svg;
 }
 
 /**
