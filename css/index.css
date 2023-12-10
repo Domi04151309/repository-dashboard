@@ -53,6 +53,9 @@ img {
 .main-grid {
   gap: 0 32px;
 }
+#contributors, #branches {
+  gap: 0 16px;
+}
 .main-grid > :first-child {
   grid-row: span 4;
 }
@@ -61,7 +64,12 @@ ul {
   padding: 0;
 }
 #issues > li, #contributors > li, .branch-commits > li {
-  padding: 8px 0;
+  padding: 16px 8px;
+  margin: -8px;
+}
+#issues > li:hover, #contributors > li:hover, .branch-commits > li:hover {
+  background: rgb(22, 27, 34);
+  border-radius: 6px;
 }
 #issues > li *, #contributors > li *, .branch-commits > li * {
   margin: 0;
