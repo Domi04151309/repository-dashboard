@@ -41,7 +41,7 @@ img {
 }
 .main-grid, #contributors, #branches {
   display: grid;
-  grid-template-columns: repeat(2, 2fr);
+  grid-template-columns: repeat(1, 1fr);
 }
 .main-grid {
   gap: 0 32px;
@@ -97,4 +97,14 @@ header, #issues > li > div, .issue-labels {
 }
 .red-text {
   color: rgb(248, 81, 73);
+}
+@media (min-width: 720px) {
+  #contributors, #branches {
+    grid-template-columns: repeat(2, 2fr);
+  }
+}
+@media (min-width: 1080px) {
+  .main-grid {
+    grid-template-columns: repeat(2, 2fr);
+  }
 }

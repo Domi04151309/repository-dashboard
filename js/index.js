@@ -1,6 +1,6 @@
-import { loadBranches } from './js/branches.js';
-import { loadContributors } from './js/contributors.js';
-import { loadIssues } from './js/issues.js';
+import { loadBranches } from './branches.js';
+import { loadContributors } from './contributors.js';
+import { loadIssues } from './issues.js';
 
 const URL_KEY = 'repository';
 
