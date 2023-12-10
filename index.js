@@ -141,12 +141,14 @@ async function loadIssues(baseUrl) {
     const title = issueView.querySelector('.issue-title');
     const labels = issueView.querySelector('.issue-labels');
     const number = issueView.querySelector('.issue-number');
+    const image = issueView.querySelector('.issue-image');
     const user = issueView.querySelector('.issue-user');
     const assignees = issueView.querySelector('.issue-assignees');
     if (
       !(title instanceof Node) ||
       !(labels instanceof Node) ||
       !(number instanceof Node) ||
+      !(image instanceof HTMLImageElement) ||
       !(user instanceof Node) ||
       !(assignees instanceof Node)
     ) throw new Error(INVALID_LAYOUT);
@@ -164,6 +166,7 @@ async function loadIssues(baseUrl) {
     );
     labels.append(...labelNodes);
     number.textContent = issue.number;
+    image.src = issue.user.avatar_url;
     user.textContent = issue.user.login;
     assignees.textContent = issue.assignees.length > 0
       ? issue.assignees.map(
@@ -194,14 +197,17 @@ async function loadCommits(baseUrl, sha) {
     if (
       !(commitView instanceof DocumentFragment)
     ) throw new Error(INVALID_LAYOUT);
+    const image = commitView.querySelector('.commit-image');
     const title = commitView.querySelector('.commit-title');
     const author = commitView.querySelector('.commit-author');
     const date = commitView.querySelector('.commit-date');
     if (
+      !(image instanceof HTMLImageElement) ||
       !(title instanceof Node) ||
       !(author instanceof Node) ||
       !(date instanceof Node)
     ) throw new Error(INVALID_LAYOUT);
+    image.src = commit.author.avatar_url;
     [title.textContent] = commit.commit.message.split('\n');
     author.textContent = commit.author.login;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
