@@ -5,7 +5,7 @@ html, button, input {
   line-height: 1.5;
 }
 body {
-  margin: 16px;
+  margin: 32px;
 }
 h1, h2, button, input {
   font-weight: normal;
@@ -38,11 +38,11 @@ input {
 }
 .main-grid {
   display: grid;
-  gap: 16px;
+  gap: 32px;
   grid-template-columns: repeat(2, 2fr);
 }
 .main-grid :first-child {
-  grid-row: span 2;
+  grid-row: span 4;
 }
 ul {
   list-style: none;
@@ -54,6 +54,9 @@ ul {
 #issues > li *, #contributors > li * {
   margin: 0;
 }
+#issues .issue-labels {
+  margin: 8px 0;
+}
 .issue-labels > li {
   padding: 2px 8px;
   background: rgba(56, 139, 253, 0.1);
@@ -63,6 +66,7 @@ ul {
 }
 header {
   justify-content: center;
+  margin-bottom: 32px;
 }
 header, #issues > li > div, #contributors > li, .issue-labels {
   display: flex;

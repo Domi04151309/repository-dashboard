@@ -19,10 +19,12 @@
         <template id="issue-template">
           <li>
             <h2 class="issue-title"></h2>
-            <div>
-              <ul class="issue-labels"></ul>
-              <p class="issue-assignees"></p>
-            </div>
+            <p>
+              #<span class="issue-number"></span>
+              opened by <span class="issue-user"></span>
+              and assigned to <span class="issue-assignees"></span>
+            </p>
+            <ul class="issue-labels"></ul>
           </li>
         </template>
         <ul id="issues"></ul>

@@ -135,10 +135,14 @@ async function loadIssues(baseUrl) {
     ) throw new Error(INVALID_LAYOUT);
     const title = issueView.querySelector('.issue-title');
     const labels = issueView.querySelector('.issue-labels');
+    const number = issueView.querySelector('.issue-number');
+    const user = issueView.querySelector('.issue-user');
     const assignees = issueView.querySelector('.issue-assignees');
     if (
       !(title instanceof Node) ||
       !(labels instanceof Node) ||
+      !(number instanceof Node) ||
+      !(user instanceof Node) ||
       !(assignees instanceof Node)
     ) throw new Error(INVALID_LAYOUT);
     title.textContent = issue.title;
@@ -154,10 +158,14 @@ async function loadIssues(baseUrl) {
       }
     );
     labels.append(...labelNodes);
-    assignees.textContent = issue.assignees.map(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      (/** @type {any} */ assignee) => assignee.login
-    ).join(', ');
+    number.textContent = issue.number;
+    user.textContent = issue.user.login;
+    assignees.textContent = issue.assignees.length > 0
+      ? issue.assignees.map(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        (/** @type {any} */ assignee) => assignee.login
+      ).join(', ')
+      : 'nobody';
     issuesList.append(issueView);
   }
 }
