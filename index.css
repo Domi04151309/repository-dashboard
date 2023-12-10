@@ -79,3 +79,9 @@ header, #issues > li > div, .issue-labels {
   height: 48px;
   border-radius: 50%;
 }
+.green-text {
+  color: rgb(63, 185, 80);
+}
+.red-text {
+  color: rgb(248, 81, 73);
+}

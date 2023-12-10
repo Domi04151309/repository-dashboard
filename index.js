@@ -12,7 +12,7 @@ const branchTemplate = document.getElementById('branch-template');
  * @param {string} baseUrl
  * @returns {Promise<void>}
  */
-async function loadIssues(baseUrl) {
+async function loadContributors(baseUrl) {
   if (
     !(contributorTemplate instanceof HTMLTemplateElement) ||
     !(contributorsList instanceof Element)
@@ -47,7 +47,79 @@ async function loadIssues(baseUrl) {
  * @param {string} baseUrl
  * @returns {Promise<void>}
  */
-async function loadContributors(baseUrl) {
+async function loadDetailedContributors(baseUrl) {
+  if (
+    !(contributorTemplate instanceof HTMLTemplateElement) ||
+    !(contributorsList instanceof Element)
+  ) throw new Error(INVALID_LAYOUT);
+  const contributorsRequest = await fetch(baseUrl + '/stats/contributors');
+  const contributors = await contributorsRequest.json();
+  if (!Array.isArray(contributors)) {
+    await loadContributors(baseUrl);
+    return;
+  }
+  contributors.sort(
+    (
+      /** @type {any} */ first,
+      /** @type {any} */ second
+    ) => second.total - first.total
+  );
+  // eslint-disable-next-line require-atomic-updates
+  contributorsList.textContent = '';
+  for (const contributor of contributors) {
+    const contributorView = contributorTemplate.content.cloneNode(true);
+    if (
+      !(contributorView instanceof DocumentFragment)
+    ) throw new Error(INVALID_LAYOUT);
+    const image = contributorView.querySelector('.contributor-image');
+    const name = contributorView.querySelector('.contributor-name');
+    const contributions = contributorView.querySelector(
+      '.contributor-contributions'
+    );
+    const additions = contributorView.querySelector('.contributor-additions');
+    const deletions = contributorView.querySelector('.contributor-deletions');
+    if (
+      !(image instanceof HTMLImageElement) ||
+      !(name instanceof Node) ||
+      !(contributions instanceof Node) ||
+      !(additions instanceof Node) ||
+      !(deletions instanceof Node)
+    ) throw new Error(INVALID_LAYOUT);
+    image.src = contributor.author.avatar_url;
+    name.textContent = contributor.author.login;
+    contributions.textContent = contributor.weeks.reduce(
+      (
+        /** @type {number} */ previous,
+        /** @type {any} */ current
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      ) => previous + current.c,
+      0
+    );
+    additions.textContent = contributor.weeks.reduce(
+      (
+        /** @type {number} */ previous,
+        /** @type {any} */ current
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      ) => previous + current.a,
+      0
+    );
+    deletions.textContent = contributor.weeks.reduce(
+      (
+        /** @type {number} */ previous,
+        /** @type {any} */ current
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      ) => previous + current.d,
+      0
+    );
+    contributorsList.append(contributorView);
+  }
+}
+
+/**
+ * @param {string} baseUrl
+ * @returns {Promise<void>}
+ */
+async function loadIssues(baseUrl) {
   if (
     !(issueTemplate instanceof HTMLTemplateElement) ||
     !(issuesList instanceof Element)
@@ -70,35 +142,21 @@ async function loadContributors(baseUrl) {
       !(assignees instanceof Node)
     ) throw new Error(INVALID_LAYOUT);
     title.textContent = issue.title;
-    /** @type {(string | Node)[]} */
+    /** @type {Node[]} */
     const labelNodes = issue.labels.map(
-      (/** @type {unknown} */ label) => {
-        if (
-          typeof label === 'object' &&
-          label !== null &&
-          'name' in label &&
-          typeof label.name === 'string' &&
-          'color' in label &&
-          typeof label.color === 'string'
-        ) {
-          const color = '#' + label.color;
-          const node = document.createElement('li');
-          node.style.color = color;
-          node.style.borderColor = color;
-          node.append(label.name);
-          return node;
-        }
-        return '';
+      (/** @type {any} */ label) => {
+        const color = '#' + label.color;
+        const node = document.createElement('li');
+        node.style.color = color;
+        node.style.borderColor = color;
+        node.textContent = label.name;
+        return node;
       }
     );
     labels.append(...labelNodes);
     assignees.textContent = issue.assignees.map(
-      (/** @type {unknown} */ assignee) => typeof assignee === 'object' &&
-        assignee !== null &&
-        'login' in assignee &&
-        typeof assignee.login === 'string'
-        ? assignee.login
-        : ''
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      (/** @type {any} */ assignee) => assignee.login
     ).join(', ');
     issuesList.append(issueView);
   }
@@ -115,17 +173,9 @@ async function loadCommits(baseUrl, sha) {
   );
   const commits = await commitsRequest.json();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return commits.map((/** @type {unknown} */ commit) => {
+  return commits.map((/** @type {any} */ commit) => {
     const listItem = document.createElement('li');
-    if (
-      typeof commit === 'object' &&
-      commit !== null &&
-      'commit' in commit &&
-      typeof commit.commit === 'object' &&
-      commit.commit !== null &&
-      'message' in commit.commit &&
-      typeof commit.commit.message === 'string'
-    ) [listItem.textContent] = commit.commit.message.split('\n');
+    [listItem.textContent] = commit.commit.message.split('\n');
     return listItem;
   });
 }
@@ -170,7 +220,7 @@ async function loadInfo(repo) {
   const baseUrl = 'https://api.github.com/repos/' + repo;
   await Promise.all([
     loadIssues(baseUrl),
-    loadContributors(baseUrl),
+    loadDetailedContributors(baseUrl),
     loadBranches(baseUrl)
   ]);
 }
