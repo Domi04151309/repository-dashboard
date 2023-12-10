@@ -7,7 +7,7 @@ html, button, input {
 body {
   margin: 32px;
 }
-h1, h2, button, input {
+h1, h2, h3, button, input {
   font-weight: normal;
   color: rgb(230, 237, 243);
 }
@@ -17,7 +17,7 @@ h1 {
 h2 {
   font-size: 1.2rem;
 }
-p, li {
+h3, p, li {
   font-size: 0.8rem;
 }
 button, input {
@@ -36,22 +36,24 @@ button:hover {
 input {
   border: 1px solid rgb(48, 54, 61);
 }
-.main-grid {
+.main-grid, #contributors, #branches {
   display: grid;
-  gap: 32px;
   grid-template-columns: repeat(2, 2fr);
 }
-.main-grid :first-child {
+.main-grid {
+  gap: 0 32px;
+}
+.main-grid > :first-child {
   grid-row: span 4;
 }
 ul {
   list-style: none;
   padding: 0;
 }
-#issues > li, #contributors > li {
+#issues > li, #contributors > li, .branch-commits > li {
   padding: 8px 0;
 }
-#issues > li *, #contributors > li * {
+#issues > li *, #contributors > li *, .branch-commits > li * {
   margin: 0;
 }
 #issues .issue-labels {

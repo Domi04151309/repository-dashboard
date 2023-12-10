@@ -11,6 +11,7 @@ const contributorTemplate = document.getElementById('contributor-template');
 const gitGraph = document.getElementById('git-graph');
 const branchesList = document.getElementById('branches');
 const branchTemplate = document.getElementById('branch-template');
+const commitTemplate = document.getElementById('commit-template');
 
 /**
  * @param {string} baseUrl
@@ -180,15 +181,32 @@ async function loadIssues(baseUrl) {
  * @returns {Promise<{ graph: Set<string>, nodes: Node[] }>}
  */
 async function loadCommits(baseUrl, sha) {
+  if (
+    !(commitTemplate instanceof HTMLTemplateElement)
+  ) throw new Error(INVALID_LAYOUT);
   const commitsRequest = await fetch(
     baseUrl + '/commits?per_page=5&sha=' + sha
   );
   const commits = await commitsRequest.json();
 
   const nodes = commits.map((/** @type {any} */ commit) => {
-    const listItem = document.createElement('li');
-    [listItem.textContent] = commit.commit.message.split('\n');
-    return listItem;
+    const commitView = commitTemplate.content.cloneNode(true);
+    if (
+      !(commitView instanceof DocumentFragment)
+    ) throw new Error(INVALID_LAYOUT);
+    const title = commitView.querySelector('.commit-title');
+    const author = commitView.querySelector('.commit-author');
+    const date = commitView.querySelector('.commit-date');
+    if (
+      !(title instanceof Node) ||
+      !(author instanceof Node) ||
+      !(date instanceof Node)
+    ) throw new Error(INVALID_LAYOUT);
+    [title.textContent] = commit.commit.message.split('\n');
+    author.textContent = commit.author.login;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    date.textContent = new Date(commit.commit.author.date).toLocaleDateString();
+    return commitView;
   });
 
   const vertices = commits.map(
