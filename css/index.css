@@ -20,6 +20,13 @@ h2 {
 h3, p, li {
   font-size: 0.8rem;
 }
+a {
+  text-decoration: none;
+  color: inherit;
+}
+a:hover {
+  color: rgb(47, 129, 247);
+}
 button, input {
   border-radius: 6px;
   padding: 4px 8px;

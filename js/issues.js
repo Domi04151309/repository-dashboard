@@ -28,14 +28,15 @@ export async function loadIssues(baseUrl) {
     const user = issueView.querySelector('.issue-user');
     const assignees = issueView.querySelector('.issue-assignees');
     if (
-      !(title instanceof Node) ||
+      !(title instanceof HTMLAnchorElement) ||
       !(labels instanceof Node) ||
       !(number instanceof Node) ||
       !(image instanceof HTMLImageElement) ||
-      !(user instanceof Node) ||
+      !(user instanceof HTMLAnchorElement) ||
       !(assignees instanceof Node)
     ) throw new Error(INVALID_LAYOUT);
     title.textContent = issue.title;
+    title.href = issue.html_url;
     /** @type {Node[]} */
     const labelNodes = issue.labels.map(
       (/** @type {any} */ label) => {
@@ -51,6 +52,7 @@ export async function loadIssues(baseUrl) {
     number.textContent = issue.number;
     image.src = issue.user.avatar_url;
     user.textContent = issue.user.login;
+    user.href = issue.user.html_url;
     assignees.textContent = issue.assignees.length > 0
       ? issue.assignees.map(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return

@@ -33,13 +33,15 @@ async function loadCommits(baseUrl, sha) {
     const date = commitView.querySelector('.commit-date');
     if (
       !(image instanceof HTMLImageElement) ||
-      !(title instanceof Node) ||
-      !(author instanceof Node) ||
+      !(title instanceof HTMLAnchorElement) ||
+      !(author instanceof HTMLAnchorElement) ||
       !(date instanceof Node)
     ) throw new Error(INVALID_LAYOUT);
     image.src = commit.author.avatar_url;
     [title.textContent] = commit.commit.message.split('\n');
+    title.href = commit.html_url;
     author.textContent = commit.author.login;
+    author.href = commit.author.html_url;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     date.textContent = new Date(commit.commit.author.date).toLocaleDateString();
     return commitView;

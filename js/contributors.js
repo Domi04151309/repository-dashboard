@@ -75,13 +75,14 @@ export async function loadContributors(baseUrl) {
     const deletions = contributorView.querySelector('.contributor-deletions');
     if (
       !(image instanceof HTMLImageElement) ||
-      !(name instanceof Node) ||
+      !(name instanceof HTMLAnchorElement) ||
       !(contributions instanceof Node) ||
       !(additions instanceof Node) ||
       !(deletions instanceof Node)
     ) throw new Error(INVALID_LAYOUT);
     image.src = contributor.author.avatar_url;
     name.textContent = contributor.author.login;
+    name.href = contributor.author.html_url;
     contributions.textContent = contributor.weeks.reduce(
       (
         /** @type {number} */ previous,
