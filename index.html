@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <title>Repository Dashboard</title>
     <meta name="viewport" content="width=device-width">
@@ -19,6 +19,10 @@
     </template>
     <main class="main-grid">
       <div>
+        <h1>Pull Requests</h1>
+        <ul id="pulls" class="selectable-list"></ul>
+      </div>
+      <div>
         <h1>Issues</h1>
         <template id="issue-template">
           <li>
@@ -32,7 +36,7 @@
             <ul class="issue-labels"></ul>
           </li>
         </template>
-        <ul id="issues"></ul>
+        <ul id="issues" class="selectable-list"></ul>
       </div>
       <div>
         <h1>Contributors</h1>
@@ -55,7 +59,7 @@
             </div>
           </li>
         </template>
-        <ul id="contributors"></ul>
+        <ul id="contributors" class="selectable-list"></ul>
       </div>
       <div>
         <h1>Branches</h1>
@@ -63,7 +67,7 @@
         <template id="branch-template">
           <li>
             <h2 class="branch-title"></h2>
-            <ul class="branch-commits"></ul>
+            <ul class="branch-commits selectable-list"></ul>
           </li>
         </template>
         <template id="commit-template">

@@ -1,6 +1,6 @@
+import { loadIssues, loadPulls } from './issues.js';
 import { loadBranches } from './branches.js';
 import { loadContributors } from './contributors.js';
-import { loadIssues } from './issues.js';
 
 const URL_KEY = 'repository';
 
@@ -13,6 +13,7 @@ const repoInput = document.getElementById('repo');
 async function loadInfo(repo) {
   const baseUrl = 'https://api.github.com/repos/' + repo;
   await Promise.all([
+    loadPulls(baseUrl),
     loadIssues(baseUrl),
     loadContributors(baseUrl),
     loadBranches(baseUrl)

@@ -1,22 +1,25 @@
 import { INVALID_LAYOUT } from './common.js';
 import { getUserLink } from './user-link.js';
 
+const pullsList = document.getElementById('pulls');
 const issuesList = document.getElementById('issues');
 const issueTemplate = document.getElementById('issue-template');
 
 /**
  * @param {string} baseUrl
+ * @param {string} endpoint
+ * @param {Element | null} list
  * @returns {Promise<void>}
  */
-export async function loadIssues(baseUrl) {
+export async function loadNumbered(baseUrl, endpoint, list) {
   if (
     !(issueTemplate instanceof HTMLTemplateElement) ||
-    !(issuesList instanceof Node)
+    !(list instanceof Node)
   ) throw new Error(INVALID_LAYOUT);
-  const issuesRequest = await fetch(baseUrl + '/issues');
+  const issuesRequest = await fetch(baseUrl + endpoint);
   const issues = await issuesRequest.json();
   // eslint-disable-next-line require-atomic-updates
-  issuesList.textContent = '';
+  list.textContent = '';
   for (const issue of issues) {
     const issueView = issueTemplate.content.cloneNode(true);
     if (
@@ -59,6 +62,22 @@ export async function loadIssues(baseUrl) {
       elements.pop();
       assignees.append(...elements);
     }
-    issuesList.append(issueView);
+    list.append(issueView);
   }
+}
+
+/**
+ * @param {string} baseUrl
+ * @returns {Promise<void>}
+ */
+export async function loadPulls(baseUrl) {
+  await loadNumbered(baseUrl, '/pulls', pullsList);
+}
+
+/**
+ * @param {string} baseUrl
+ * @returns {Promise<void>}
+ */
+export async function loadIssues(baseUrl) {
+  await loadNumbered(baseUrl, '/issues', issuesList);
 }
