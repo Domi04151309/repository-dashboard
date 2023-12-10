@@ -1,4 +1,5 @@
 import { INVALID_LAYOUT } from './common.js';
+import { getUserLink } from './user-link.js';
 
 const issuesList = document.getElementById('issues');
 const issueTemplate = document.getElementById('issue-template');
@@ -24,15 +25,13 @@ export async function loadIssues(baseUrl) {
     const title = issueView.querySelector('.issue-title');
     const labels = issueView.querySelector('.issue-labels');
     const number = issueView.querySelector('.issue-number');
-    const image = issueView.querySelector('.issue-image');
     const user = issueView.querySelector('.issue-user');
     const assignees = issueView.querySelector('.issue-assignees');
     if (
       !(title instanceof HTMLAnchorElement) ||
       !(labels instanceof Node) ||
       !(number instanceof Node) ||
-      !(image instanceof HTMLImageElement) ||
-      !(user instanceof HTMLAnchorElement) ||
+      !(user instanceof Node) ||
       !(assignees instanceof Node)
     ) throw new Error(INVALID_LAYOUT);
     title.textContent = issue.title;
@@ -50,15 +49,16 @@ export async function loadIssues(baseUrl) {
     );
     labels.append(...labelNodes);
     number.textContent = issue.number;
-    image.src = issue.user.avatar_url;
-    user.textContent = issue.user.login;
-    user.href = issue.user.html_url;
-    assignees.textContent = issue.assignees.length > 0
-      ? issue.assignees.map(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        (/** @type {any} */ assignee) => assignee.login
-      ).join(', ')
-      : 'nobody';
+    user.append(getUserLink(issue.user));
+    if (issue.assignees.length === 0) assignees.textContent = 'nobody';
+    else {
+      const elements = [];
+      for (
+        const assignee of issue.assignees
+      ) elements.push(getUserLink(assignee), ', ');
+      elements.pop();
+      assignees.append(...elements);
+    }
     issuesList.append(issueView);
   }
 }

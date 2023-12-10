@@ -102,7 +102,7 @@ header, #issues > li > div, .issue-labels {
   width: 48px;
   height: 48px;
 }
-.issue-image, .commit-image {
+.user-image {
   width: 1.2em;
   height: 1.2em;
   vertical-align: middle;

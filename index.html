@@ -13,6 +13,10 @@
       <input id="repo" type="text" placeholder="{owner}/{repo}" aria-label="Repository" />
       <button id="load" type="button">Load</button>
     </header>
+    <template id="user-template">
+      <img class="user-image" src="" alt="Profile" loading="lazy">
+      <a class="user-name" href="" target="_blank"></a>
+    </template>
     <main class="main-grid">
       <div>
         <h1>Issues</h1>
@@ -22,8 +26,7 @@
             <p>
               #<span class="issue-number"></span>
               opened by
-              <img class="issue-image" src="" alt="Profile" loading="lazy">
-              <a class="issue-user" href="" target="_blank"></a>
+              <span class="issue-user"></span>
               and assigned to <span class="issue-assignees"></span>
             </p>
             <ul class="issue-labels"></ul>
@@ -67,8 +70,7 @@
           <li>
             <h3><a class="commit-title" href="" target="_blank"></a></h3>
             <p>
-              <img class="commit-image" src="" alt="Profile" loading="lazy">
-              <a class="commit-author" href="" target="_blank"></a> on
+              <span class="commit-author"></span> on
               <span class="commit-date"></span>
             </p>
           </li>
