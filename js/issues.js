@@ -9,9 +9,10 @@ const issueTemplate = document.getElementById('issue-template');
  * @param {string} baseUrl
  * @param {string} endpoint
  * @param {Element | null} list
+ * @param {(item: any) => boolean} filter
  * @returns {Promise<void>}
  */
-export async function loadNumbered(baseUrl, endpoint, list) {
+export async function loadNumbered(baseUrl, endpoint, list, filter) {
   if (
     !(issueTemplate instanceof HTMLTemplateElement) ||
     !(list instanceof Node)
@@ -20,7 +21,7 @@ export async function loadNumbered(baseUrl, endpoint, list) {
   const issues = await issuesRequest.json();
   // eslint-disable-next-line require-atomic-updates
   list.textContent = '';
-  for (const issue of issues) {
+  for (const issue of issues.filter(filter)) {
     const issueView = issueTemplate.content.cloneNode(true);
     if (
       !(issueView instanceof DocumentFragment)
@@ -71,7 +72,7 @@ export async function loadNumbered(baseUrl, endpoint, list) {
  * @returns {Promise<void>}
  */
 export async function loadPulls(baseUrl) {
-  await loadNumbered(baseUrl, '/pulls', pullsList);
+  await loadNumbered(baseUrl, '/pulls', pullsList, () => true);
 }
 
 /**
@@ -79,5 +80,10 @@ export async function loadPulls(baseUrl) {
  * @returns {Promise<void>}
  */
 export async function loadIssues(baseUrl) {
-  await loadNumbered(baseUrl, '/issues', issuesList);
+  await loadNumbered(
+    baseUrl,
+    '/issues',
+    issuesList,
+    item => !('pull_request' in item)
+  );
 }
